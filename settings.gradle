@@ -8,7 +8,8 @@ pluginManagement {
 
 include ':app'
 include ':core'
-include ':core:network'
 include ':core:database'
 include ':core:architecture'
 include ':core:common'
+include ':core:domain'
+include ':core:data'

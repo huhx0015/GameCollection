@@ -1,5 +1,6 @@
 import com.android.build.api.dsl.ApplicationExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -8,6 +9,11 @@ plugins {
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt.android)
+}
+
+val localProperties = Properties().apply {
+    val f = rootProject.file("local.properties")
+    if (f.exists()) f.inputStream().use { load(it) }
 }
 
 extensions.configure<ApplicationExtension>("android") {
@@ -22,6 +28,16 @@ extensions.configure<ApplicationExtension>("android") {
         versionName = "1.0"
         multiDexEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField(
+            "String",
+            "TWITCH_CLIENT_ID",
+            "\"${localProperties.getProperty("twitch.client.id", "")}\"",
+        )
+        buildConfigField(
+            "String",
+            "TWITCH_CLIENT_SECRET",
+            "\"${localProperties.getProperty("twitch.client.secret", "")}\"",
+        )
     }
 
     buildTypes {
@@ -57,7 +73,8 @@ kotlin {
 }
 
 dependencies {
-    implementation(project(":core:network"))
+    implementation(project(":core:data"))
+    implementation(project(":core:domain"))
     implementation(project(":core:database"))
     implementation(project(":core:architecture"))
     implementation(project(":core:common"))
@@ -75,6 +92,7 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.animation.graphics)
     implementation(libs.androidx.compose.material3)
+    implementation("androidx.compose.material:material-icons-extended")
     implementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.activity.compose)
