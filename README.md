@@ -1,10 +1,10 @@
-# GameCollection
+# Game Collection
 
 [GameCollection_Demo.webm](https://github.com/user-attachments/assets/68242048-39e7-415a-aca4-b38c9b6a57bc)
 
 ## Description
 
-**GameCollection** is an Android app that **leverages the [IGDB API](https://api-docs.igdb.com/) for game metadata** and the **[Twitch API](https://dev.twitch.tv/docs/api/) for authentication** (client-credentials access tokens required by IGDB). Users browse the [IGDB](https://www.igdb.com/) catalog: they pick a platform, explore a filterable list, open rich game details, and save titles to a personal collection stored locally with Room.
+**Game Collection** is an Android app that **leverages the [IGDB API](https://api-docs.igdb.com/) for game metadata** and the **[Twitch API](https://dev.twitch.tv/docs/api/) for authentication** (client-credentials access tokens required by IGDB). Users browse the [IGDB](https://www.igdb.com/) catalog: they pick a platform, explore a filterable list, open rich game details, and save titles to a personal collection stored locally with Room.
 
 ## Instructions
 
