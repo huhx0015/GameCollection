@@ -6,6 +6,7 @@ import com.huhx0015.gamecollection.domain.model.GameSummary
 import com.huhx0015.gamecollection.domain.model.RegionFilter
 import com.huhx0015.gamecollection.domain.repository.IgdbRepository
 
+/** Paging source that loads IGDB game list pages for a platform and current filters. */
 class IgdbGamesPagingSource(
     private val platformId: Long,
     private val searchQuery: String?,

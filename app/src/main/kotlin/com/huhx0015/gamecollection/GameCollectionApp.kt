@@ -24,6 +24,7 @@ import com.huhx0015.gamecollection.feature.games.GameListScreen
 import com.huhx0015.gamecollection.feature.platforms.PlatformSelectionScreen
 import com.huhx0015.gamecollection.navigation.Routes
 
+/** Root UI: bottom navigation, nav host, and feature screens for games and collection. */
 @Composable
 fun GameCollectionApp() {
     val navController = rememberNavController()

@@ -1,5 +1,6 @@
 package com.huhx0015.gamecollection.navigation
 
+/** Central definitions for Navigation Compose routes and route builders. */
 object Routes {
     const val GAMES_TAB = "games_tab"
     const val COLLECTION_TAB = "collection_tab"

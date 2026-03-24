@@ -5,6 +5,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 
+/** Constructs Apicalypse query bodies for platforms, genres, game lists, and game details. */
 object IgdbQueryBuilder {
 
     private val textPlain = "text/plain; charset=utf-8".toMediaType()

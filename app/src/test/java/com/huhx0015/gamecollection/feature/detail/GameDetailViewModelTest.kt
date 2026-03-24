@@ -17,6 +17,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
+/** Tests [GameDetailViewModel] detail loading, collection membership, and add flow. */
 @OptIn(ExperimentalCoroutinesApi::class)
 class GameDetailViewModelTest {
 

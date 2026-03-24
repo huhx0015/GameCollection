@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/** Loads and searches IGDB platforms; emits navigation when one is selected. */
 @HiltViewModel
 class PlatformSelectionViewModel @Inject constructor(
     private val getPlatformsUseCase: GetPlatformsUseCase,

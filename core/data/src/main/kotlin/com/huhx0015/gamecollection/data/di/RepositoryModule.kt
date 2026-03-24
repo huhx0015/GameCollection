@@ -10,6 +10,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+/** Binds repository implementations for Hilt injection across the app. */
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {

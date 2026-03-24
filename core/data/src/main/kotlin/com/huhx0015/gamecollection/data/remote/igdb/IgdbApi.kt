@@ -9,6 +9,7 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
 
+/** IGDB v4 POST endpoints; bodies are plain-text Apicalypse query strings. */
 interface IgdbApi {
 
     @POST("platforms")

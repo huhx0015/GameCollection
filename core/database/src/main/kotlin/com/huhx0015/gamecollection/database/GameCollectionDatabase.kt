@@ -5,6 +5,7 @@ import androidx.room.RoomDatabase
 import com.huhx0015.gamecollection.database.dao.OwnedGameDao
 import com.huhx0015.gamecollection.database.entity.OwnedGameEntity
 
+/** Room database for locally stored owned games. */
 @Database(
     entities = [OwnedGameEntity::class],
     version = 1,

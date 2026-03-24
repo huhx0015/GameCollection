@@ -2,6 +2,7 @@ package com.huhx0015.gamecollection.data.remote.igdb.dto
 
 import com.squareup.moshi.Json
 
+/** IGDB single-game payload for the detail query; maps to the domain game-detail model. */
 data class GameDetailsDto(
     val id: Long,
     val name: String,

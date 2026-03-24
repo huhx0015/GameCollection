@@ -21,12 +21,14 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/** Search text, region, and genre filters applied to the paged IGDB game list. */
 data class GameListFilters(
     val searchQuery: String = "",
     val region: RegionFilter = RegionFilter.ALL,
     val selectedGenreIds: Set<Long> = emptySet(),
 )
 
+/** Paged catalog for a chosen platform with genre list and filter state. */
 @HiltViewModel
 class GameListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,

@@ -1,5 +1,6 @@
 package com.huhx0015.gamecollection.domain.model
 
+/** Full IGDB game payload for the detail screen (text, art, genres, release metadata). */
 data class GameDetails(
     val id: Long,
     val name: String,

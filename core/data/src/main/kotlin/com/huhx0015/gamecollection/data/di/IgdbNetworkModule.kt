@@ -17,14 +17,17 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
+/** Qualifies the OkHttpClient used only for Twitch OAuth calls. */
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class TwitchOkHttp
 
+/** Qualifies the OkHttpClient wired with [IgdbAuthInterceptor] for IGDB. */
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class IgdbOkHttp
 
+/** Moshi, OkHttp, and Retrofit clients for Twitch auth and IGDB API. */
 @Module
 @InstallIn(SingletonComponent::class)
 object IgdbNetworkModule {

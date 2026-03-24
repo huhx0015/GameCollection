@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 
+/** In-memory [CollectionRepository] with mutable owned-game state for domain tests. */
 class FakeCollectionRepository : CollectionRepository {
 
     private val owned = MutableStateFlow<List<OwnedGame>>(emptyList())

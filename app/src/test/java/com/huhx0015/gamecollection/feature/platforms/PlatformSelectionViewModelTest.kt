@@ -12,6 +12,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 
+/** Tests [PlatformSelectionViewModel] platform loading, search, and navigation events. */
 @OptIn(ExperimentalCoroutinesApi::class)
 class PlatformSelectionViewModelTest {
 

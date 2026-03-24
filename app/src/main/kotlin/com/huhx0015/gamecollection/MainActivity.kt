@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import com.huhx0015.gamecollection.ui.theme.GameCollectionTheme
 import dagger.hilt.android.AndroidEntryPoint
 
+/** Single-activity host; applies theme and shows [GameCollectionApp]. */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 

@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 
+/** Test double for [CollectionRepository] in app-layer ViewModel tests. */
 class FakeCollectionRepository : CollectionRepository {
 
     private val owned = MutableStateFlow<List<OwnedGame>>(emptyList())

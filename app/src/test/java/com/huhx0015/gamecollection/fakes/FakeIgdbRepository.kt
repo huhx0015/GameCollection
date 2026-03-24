@@ -7,6 +7,7 @@ import com.huhx0015.gamecollection.domain.model.Genre
 import com.huhx0015.gamecollection.domain.model.RegionFilter
 import com.huhx0015.gamecollection.domain.repository.IgdbRepository
 
+/** Test double for [IgdbRepository] in app-layer ViewModel tests. */
 class FakeIgdbRepository : IgdbRepository {
 
     var platformsResult: Result<List<GamePlatform>> = Result.success(emptyList())

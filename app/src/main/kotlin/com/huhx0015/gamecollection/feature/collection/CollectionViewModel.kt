@@ -15,11 +15,13 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
+/** Local search and optional platform filter for the owned-games list. */
 data class CollectionUiState(
     val searchQuery: String = "",
     val platformFilter: Long? = null,
 )
 
+/** Presents Room-backed owned games with search and platform filtering. */
 @HiltViewModel
 class CollectionViewModel @Inject constructor(
     private val observeCollectionUseCase: ObserveCollectionUseCase,

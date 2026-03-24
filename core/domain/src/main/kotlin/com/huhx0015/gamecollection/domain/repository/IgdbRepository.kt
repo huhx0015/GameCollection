@@ -6,6 +6,7 @@ import com.huhx0015.gamecollection.domain.model.GameSummary
 import com.huhx0015.gamecollection.domain.model.Genre
 import com.huhx0015.gamecollection.domain.model.RegionFilter
 
+/** Remote game metadata from IGDB (platforms, genres, paged games, details). */
 interface IgdbRepository {
 
     suspend fun getPlatforms(searchQuery: String?): Result<List<GamePlatform>>

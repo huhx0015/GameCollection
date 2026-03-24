@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/** [CollectionRepository] implementation using Room [OwnedGameDao]. */
 @Singleton
 class CollectionRepositoryImpl @Inject constructor(
     private val ownedGameDao: OwnedGameDao,

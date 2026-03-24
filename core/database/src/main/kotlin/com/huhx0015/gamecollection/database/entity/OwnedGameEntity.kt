@@ -2,6 +2,7 @@ package com.huhx0015.gamecollection.database.entity
 
 import androidx.room.Entity
 
+/** Room row for a game saved to the user's collection (composite key: game + platform). */
 @Entity(
     tableName = "owned_games",
     primaryKeys = ["igdbGameId", "platformId"],

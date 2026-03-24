@@ -1,5 +1,6 @@
 package com.huhx0015.gamecollection.data.remote.igdb
 
+/** Builds CDN URLs for IGDB image ids (covers and screenshots). */
 object IgdbImageUrl {
     fun coverSmall(imageId: String?): String? = build(imageId, "t_cover_small")
     fun coverBig(imageId: String?): String? = build(imageId, "t_cover_big")

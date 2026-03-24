@@ -13,6 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 private val LightColors = lightColorScheme()
 private val DarkColors = darkColorScheme()
 
+/** Material 3 theme wrapper; uses dynamic color on Android 12+ when enabled. */
 @Composable
 fun GameCollectionTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),

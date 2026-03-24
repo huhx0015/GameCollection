@@ -1,6 +1,8 @@
 package com.huhx0015.gamecollection.domain.model
 
 /**
+ * User-selectable release region bucket for IGDB game list filtering.
+ *
  * Maps to IGDB [release_dates.region](https://api-docs.igdb.com/#release-date-region-enums) values.
  * Asia is a product grouping; we map to multiple IGDB region codes.
  */

@@ -8,6 +8,7 @@ import com.huhx0015.gamecollection.logging.ReleaseTree
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 
+/** Application entry point; enables Hilt and configures Timber for debug vs release. */
 @HiltAndroidApp
 open class AndroidApplication : Application() {
 

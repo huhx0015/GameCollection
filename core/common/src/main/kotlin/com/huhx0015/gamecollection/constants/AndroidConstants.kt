@@ -1,5 +1,6 @@
 package com.huhx0015.gamecollection.constants
 
+/** Shared Android-level constants (preferences name, placeholder API URLs). */
 object AndroidConstants {
 
     /** OBJECT VARIABLES _______________________________________________________________________  */

@@ -7,6 +7,7 @@ import com.huhx0015.gamecollection.domain.model.Genre
 import com.huhx0015.gamecollection.domain.model.RegionFilter
 import com.huhx0015.gamecollection.domain.repository.IgdbRepository
 
+/** Configurable stub [IgdbRepository] for domain unit tests. */
 class FakeIgdbRepository : IgdbRepository {
 
     var platformsResult: Result<List<GamePlatform>> = Result.success(emptyList())

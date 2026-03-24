@@ -13,6 +13,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
+/** Unit tests for domain use cases against fake repositories. */
 class DomainUseCasesTest {
 
     @Test

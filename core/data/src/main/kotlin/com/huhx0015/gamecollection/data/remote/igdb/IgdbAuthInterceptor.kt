@@ -8,6 +8,7 @@ import okhttp3.Response
 import java.io.IOException
 import javax.inject.Inject
 
+/** Injects `Client-ID` and `Authorization: Bearer` on every IGDB request using [TwitchTokenStore]. */
 class IgdbAuthInterceptor @Inject constructor(
     private val credentials: TwitchCredentials,
     private val tokenStore: TwitchTokenStore,

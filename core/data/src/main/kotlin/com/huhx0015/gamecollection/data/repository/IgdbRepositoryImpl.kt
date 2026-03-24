@@ -13,6 +13,7 @@ import com.huhx0015.gamecollection.domain.repository.IgdbRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/** [IgdbRepository] backed by [IgdbApi] and DTO-to-domain mappers. */
 @Singleton
 class IgdbRepositoryImpl @Inject constructor(
     private val igdbApi: IgdbApi,

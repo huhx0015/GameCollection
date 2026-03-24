@@ -12,6 +12,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+/** App-wide Android system services exposed to the object graph (assets, connectivity, prefs). */
 @Module
 @InstallIn(SingletonComponent::class)
 object ApplicationModule {

@@ -7,6 +7,7 @@ import androidx.room.Query
 import com.huhx0015.gamecollection.database.entity.OwnedGameEntity
 import kotlinx.coroutines.flow.Flow
 
+/** CRUD and observe queries for the `owned_games` table. */
 @Dao
 interface OwnedGameDao {
 

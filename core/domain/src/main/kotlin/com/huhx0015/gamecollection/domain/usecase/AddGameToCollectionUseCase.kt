@@ -5,6 +5,7 @@ import com.huhx0015.gamecollection.domain.model.OwnedGame
 import com.huhx0015.gamecollection.domain.repository.CollectionRepository
 import javax.inject.Inject
 
+/** Builds an [OwnedGame] from IGDB details and stores it in the local collection. */
 class AddGameToCollectionUseCase @Inject constructor(
     private val collectionRepository: CollectionRepository,
 ) {

@@ -7,6 +7,7 @@ import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/** Thread-safe cache of Twitch app access tokens with expiry-aware refresh. */
 @Singleton
 class TwitchTokenStore @Inject constructor(
     private val twitchAuthApi: TwitchAuthApi,

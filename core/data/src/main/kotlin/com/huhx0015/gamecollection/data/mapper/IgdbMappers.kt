@@ -1,3 +1,6 @@
+/**
+ * Maps IGDB DTOs and Room entities to domain models (and reverse for persistence).
+ */
 package com.huhx0015.gamecollection.data.mapper
 
 import com.huhx0015.gamecollection.data.remote.igdb.IgdbImageUrl

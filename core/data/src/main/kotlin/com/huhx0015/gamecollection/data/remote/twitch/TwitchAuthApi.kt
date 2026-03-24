@@ -5,6 +5,7 @@ import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
 
+/** Retrofit service for Twitch client-credentials token requests. */
 interface TwitchAuthApi {
 
     @FormUrlEncoded

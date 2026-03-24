@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/** Loading, content, errors, and collection actions for the game detail screen. */
 data class GameDetailUiState(
     val isLoading: Boolean = true,
     val details: GameDetails? = null,
@@ -24,6 +25,7 @@ data class GameDetailUiState(
     val addMessage: String? = null,
 )
 
+/** Fetches IGDB details and handles add-to-collection for the current game/platform. */
 @HiltViewModel
 class GameDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
