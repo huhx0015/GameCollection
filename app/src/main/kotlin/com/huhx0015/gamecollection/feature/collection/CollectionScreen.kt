@@ -38,7 +38,7 @@ fun CollectionScreen(
     onGameClick: (Long, Long) -> Unit,
     viewModel: CollectionViewModel = hiltViewModel(),
 ) {
-    val ui by viewModel.uiState.collectAsStateWithLifecycle()
+    val ui by viewModel.state.collectAsStateWithLifecycle()
     val games by viewModel.displayedGames.collectAsStateWithLifecycle()
     val hasMore by viewModel.hasMoreGames.collectAsStateWithLifecycle()
     val platformOptions by viewModel.platformIdsInCollection.collectAsStateWithLifecycle()
@@ -53,7 +53,7 @@ fun CollectionScreen(
             .distinctUntilChanged()
             .collect { (lastIdx, size, more) ->
                 if (more && size > 0 && lastIdx >= size - 1) {
-                    viewModel.loadMore()
+                    viewModel.sendIntent(CollectionIntent.LoadMore)
                 }
             }
     }
@@ -70,7 +70,7 @@ fun CollectionScreen(
         )
         OutlinedTextField(
             value = ui.searchQuery,
-            onValueChange = viewModel::onSearchChange,
+            onValueChange = { viewModel.sendIntent(CollectionIntent.SearchChanged(it)) },
             modifier = Modifier.fillMaxWidth(),
             placeholder = { Text("Search your games") },
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
@@ -84,14 +84,18 @@ fun CollectionScreen(
         ) {
             FilterChip(
                 selected = ui.platformFilter == null,
-                onClick = { viewModel.onPlatformFilter(null) },
+                onClick = { viewModel.sendIntent(CollectionIntent.PlatformFilterChanged(null)) },
                 label = { Text("All systems") },
             )
             platformOptions.forEach { pid ->
                 FilterChip(
                     selected = ui.platformFilter == pid,
                     onClick = {
-                        viewModel.onPlatformFilter(if (ui.platformFilter == pid) null else pid)
+                        viewModel.sendIntent(
+                            CollectionIntent.PlatformFilterChanged(
+                                if (ui.platformFilter == pid) null else pid,
+                            ),
+                        )
                     },
                     label = { Text(platformNames[pid] ?: "ID $pid") },
                 )

@@ -1,5 +1,6 @@
 package com.huhx0015.gamecollection.feature.detail
 
+import androidx.lifecycle.SavedStateHandle
 import com.huhx0015.gamecollection.MainDispatcherRule
 import com.huhx0015.gamecollection.domain.model.GameDetails
 import com.huhx0015.gamecollection.domain.usecase.AddGameToCollectionUseCase
@@ -7,7 +8,6 @@ import com.huhx0015.gamecollection.domain.usecase.GetGameDetailsUseCase
 import com.huhx0015.gamecollection.domain.usecase.IsGameInCollectionUseCase
 import com.huhx0015.gamecollection.fakes.FakeCollectionRepository
 import com.huhx0015.gamecollection.fakes.FakeIgdbRepository
-import androidx.lifecycle.SavedStateHandle
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -51,9 +51,9 @@ class GameDetailViewModelTest {
             IsGameInCollectionUseCase(collection),
         )
         advanceUntilIdle()
-        assertEquals("Test Game", vm.uiState.value.details?.name)
-        assertFalse(vm.uiState.value.inCollection)
-        assertFalse(vm.uiState.value.isLoading)
+        assertEquals("Test Game", vm.state.value.details?.name)
+        assertFalse(vm.state.value.inCollection)
+        assertFalse(vm.state.value.isLoading)
     }
 
     @Test
@@ -81,9 +81,9 @@ class GameDetailViewModelTest {
             IsGameInCollectionUseCase(collection),
         )
         advanceUntilIdle()
-        vm.addToCollection()
+        vm.sendIntent(GameDetailIntent.AddToCollection)
         advanceUntilIdle()
-        assertTrue(vm.uiState.value.inCollection)
-        assertEquals("Added", vm.uiState.value.addMessage)
+        assertTrue(vm.state.value.inCollection)
+        assertEquals("Added", vm.state.value.addMessage)
     }
 }

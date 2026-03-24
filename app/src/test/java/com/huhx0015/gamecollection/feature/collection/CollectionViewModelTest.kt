@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -38,8 +39,9 @@ class CollectionViewModelTest {
         val vm = CollectionViewModel(ObserveCollectionUseCase(repo), FakeIgdbRepository())
         backgroundScope.launch { vm.displayedGames.collect { } }
         advanceUntilIdle()
-        vm.onSearchChange("findme")
-        assertEquals("findme", vm.uiState.value.searchQuery)
+        vm.sendIntent(CollectionIntent.SearchChanged("findme"))
+        advanceUntilIdle()
+        assertEquals("findme", vm.state.value.searchQuery)
     }
 
     @Test
@@ -56,10 +58,11 @@ class CollectionViewModelTest {
         backgroundScope.launch { vm.displayedGames.collect { } }
         advanceUntilIdle()
         assertEquals(2, vm.displayedGames.value.size)
-        vm.onSearchChange("b")
-        vm.onSearchChange("bb")
-        vm.onSearchChange("bbb")
-        assertEquals("bbb", vm.uiState.value.searchQuery)
+        vm.sendIntent(CollectionIntent.SearchChanged("b"))
+        vm.sendIntent(CollectionIntent.SearchChanged("bb"))
+        vm.sendIntent(CollectionIntent.SearchChanged("bbb"))
+        runCurrent()
+        assertEquals("bbb", vm.state.value.searchQuery)
         assertEquals(2, vm.displayedGames.value.size)
         advanceTimeBy(SEARCH_DEBOUNCE_MS)
         advanceUntilIdle()

@@ -55,8 +55,9 @@ fun GameListScreen(
     onGameClick: (Long) -> Unit,
     viewModel: GameListViewModel = hiltViewModel(),
 ) {
-    val filters by viewModel.filters.collectAsStateWithLifecycle()
-    val allGenres by viewModel.allGenres.collectAsStateWithLifecycle()
+    val listState by viewModel.state.collectAsStateWithLifecycle()
+    val filters = listState.filters
+    val allGenres = listState.allGenres
     val pagingItems = viewModel.pagingFlow.collectAsLazyPagingItems()
 
     Scaffold(
@@ -78,7 +79,7 @@ fun GameListScreen(
         ) {
             OutlinedTextField(
                 value = filters.searchQuery,
-                onValueChange = viewModel::onSearchChange,
+                onValueChange = { viewModel.sendIntent(GameListIntent.SearchChanged(it)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
@@ -95,7 +96,7 @@ fun GameListScreen(
                 allGenres.forEach { genre ->
                     FilterChip(
                         selected = filters.selectedGenreIds.contains(genre.id),
-                        onClick = { viewModel.toggleGenre(genre.id) },
+                        onClick = { viewModel.sendIntent(GameListIntent.ToggleGenre(genre.id)) },
                         label = { Text(genre.name) },
                     )
                 }

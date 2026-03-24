@@ -40,7 +40,7 @@ fun GameDetailScreen(
     onBack: () -> Unit,
     viewModel: GameDetailViewModel = hiltViewModel(),
 ) {
-    val ui by viewModel.uiState.collectAsStateWithLifecycle()
+    val ui by viewModel.state.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -141,7 +141,7 @@ fun GameDetailScreen(
                         }
                     }
                     Button(
-                        onClick = viewModel::addToCollection,
+                        onClick = { viewModel.sendIntent(GameDetailIntent.AddToCollection) },
                         enabled = !ui.inCollection && !ui.addInProgress,
                         modifier = Modifier
                             .fillMaxWidth()

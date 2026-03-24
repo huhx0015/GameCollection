@@ -38,8 +38,9 @@ class GameListViewModelTest {
             GetGenresUseCase(fake),
         )
         advanceUntilIdle()
-        vm.onSearchChange("zelda")
-        assertEquals("zelda", vm.filters.value.searchQuery)
+        vm.sendIntent(GameListIntent.SearchChanged("zelda"))
+        advanceUntilIdle()
+        assertEquals("zelda", vm.state.value.filters.searchQuery)
     }
 
     @Test
@@ -57,10 +58,11 @@ class GameListViewModelTest {
         )
         advanceUntilIdle()
         fake.fetchGamesPageSearchQueries.clear()
-        vm.onSearchChange("z")
-        vm.onSearchChange("ze")
-        vm.onSearchChange("zel")
-        assertEquals("zel", vm.filters.value.searchQuery)
+        vm.sendIntent(GameListIntent.SearchChanged("z"))
+        vm.sendIntent(GameListIntent.SearchChanged("ze"))
+        vm.sendIntent(GameListIntent.SearchChanged("zel"))
+        advanceUntilIdle()
+        assertEquals("zel", vm.state.value.filters.searchQuery)
         advanceTimeBy(SEARCH_DEBOUNCE_MS)
         advanceUntilIdle()
         vm.pagingFlow.asSnapshot()

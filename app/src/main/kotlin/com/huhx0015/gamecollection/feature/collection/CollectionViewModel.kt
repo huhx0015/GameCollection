@@ -1,12 +1,14 @@
 package com.huhx0015.gamecollection.feature.collection
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.huhx0015.gamecollection.SEARCH_DEBOUNCE_MS
+import com.huhx0015.gamecollection.architecture.mvi.BaseViewModel
 import com.huhx0015.gamecollection.domain.model.OwnedGame
 import com.huhx0015.gamecollection.domain.repository.IgdbRepository
 import com.huhx0015.gamecollection.domain.usecase.ObserveCollectionUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -16,20 +18,13 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import javax.inject.Inject
-
-/** Local search and optional platform filter for the owned-games list. */
-data class CollectionUiState(
-    val searchQuery: String = "",
-    val platformFilter: Long? = null,
-)
 
 /** Presents Room-backed owned games with search, platform filter, and chunked loading (10 per page). */
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
@@ -37,14 +32,16 @@ data class CollectionUiState(
 class CollectionViewModel @Inject constructor(
     private val observeCollectionUseCase: ObserveCollectionUseCase,
     private val igdbRepository: IgdbRepository,
-) : ViewModel() {
+) : BaseViewModel<CollectionState, CollectionIntent, CollectionEvent>() {
 
     private companion object {
         const val PAGE_SIZE = 10
     }
 
-    private val _ui = MutableStateFlow(CollectionUiState())
-    val uiState: StateFlow<CollectionUiState> = _ui.asStateFlow()
+    private val _state = MutableStateFlow(CollectionState())
+    override val state: StateFlow<CollectionState> = _state.asStateFlow()
+
+    override val events: Flow<CollectionEvent> = emptyFlow()
 
     private val _visibleCount = MutableStateFlow(PAGE_SIZE)
 
@@ -85,8 +82,8 @@ class CollectionViewModel @Inject constructor(
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val filteredGames: StateFlow<List<OwnedGame>> = combine(
-        _ui.map { it.platformFilter }.distinctUntilChanged(),
-        _ui
+        state.map { it.platformFilter }.distinctUntilChanged(),
+        state
             .map { it.searchQuery }
             .debounce { q -> if (q.isBlank()) 0L else SEARCH_DEBOUNCE_MS }
             .distinctUntilChanged(),
@@ -111,17 +108,19 @@ class CollectionViewModel @Inject constructor(
             n < games.size
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
-    fun onSearchChange(query: String) {
-        _ui.update { it.copy(searchQuery = query) }
-        _visibleCount.value = PAGE_SIZE
-    }
-
-    fun onPlatformFilter(platformId: Long?) {
-        _ui.update { it.copy(platformFilter = platformId) }
-        _visibleCount.value = PAGE_SIZE
-    }
-
-    fun loadMore() {
-        _visibleCount.update { it + PAGE_SIZE }
+    override suspend fun processIntent(intent: CollectionIntent) {
+        when (intent) {
+            is CollectionIntent.SearchChanged -> {
+                _state.update { it.copy(searchQuery = intent.query) }
+                _visibleCount.value = PAGE_SIZE
+            }
+            is CollectionIntent.PlatformFilterChanged -> {
+                _state.update { it.copy(platformFilter = intent.platformId) }
+                _visibleCount.value = PAGE_SIZE
+            }
+            CollectionIntent.LoadMore -> {
+                _visibleCount.update { it + PAGE_SIZE }
+            }
+        }
     }
 }
