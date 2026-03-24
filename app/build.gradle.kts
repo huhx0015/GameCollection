@@ -16,6 +16,16 @@ val localProperties = Properties().apply {
     if (f.exists()) f.inputStream().use { load(it) }
 }
 
+val keysProperties = Properties().apply {
+    val f = rootProject.file("keys.properties")
+    if (f.exists()) f.inputStream().use { load(it) }
+}
+
+/** Prefer [keys.properties], fall back to [local.properties] for Twitch credentials. */
+fun twitchCredential(key: String): String =
+    keysProperties.getProperty(key)?.takeIf { it.isNotBlank() }
+        ?: localProperties.getProperty(key, "")
+
 extensions.configure<ApplicationExtension>("android") {
     compileSdk = 36
     namespace = "com.huhx0015.gamecollection"
@@ -31,12 +41,12 @@ extensions.configure<ApplicationExtension>("android") {
         buildConfigField(
             "String",
             "TWITCH_CLIENT_ID",
-            "\"${localProperties.getProperty("twitch.client.id", "")}\"",
+            "\"${twitchCredential("twitch.client.id")}\"",
         )
         buildConfigField(
             "String",
             "TWITCH_CLIENT_SECRET",
-            "\"${localProperties.getProperty("twitch.client.secret", "")}\"",
+            "\"${twitchCredential("twitch.client.secret")}\"",
         )
     }
 
