@@ -14,11 +14,18 @@ class FakeIgdbRepository : IgdbRepository {
     var gamesPageResult: Result<List<GameSummary>> = Result.success(emptyList())
     var detailsResult: Result<GameDetails> = Result.failure(IllegalStateException("no details"))
 
+    /** Captured [fetchPlatformsPage] query arguments for tests (most recent last). */
+    val fetchPlatformsPageQueries = mutableListOf<String?>()
+
+    /** Captured [fetchGamesPage] search queries for tests (most recent last). */
+    val fetchGamesPageSearchQueries = mutableListOf<String?>()
+
     override suspend fun fetchPlatformsPage(
         searchQuery: String?,
         offset: Int,
         limit: Int,
     ): Result<List<GamePlatform>> {
+        fetchPlatformsPageQueries.add(searchQuery)
         val all = platformsResult.getOrElse { return platformsResult }
         return Result.success(all.drop(offset).take(limit))
     }
@@ -37,7 +44,10 @@ class FakeIgdbRepository : IgdbRepository {
         limit: Int,
         searchQuery: String?,
         genreIds: Set<Long>,
-    ): Result<List<GameSummary>> = gamesPageResult
+    ): Result<List<GameSummary>> {
+        fetchGamesPageSearchQueries.add(searchQuery)
+        return gamesPageResult
+    }
 
     override suspend fun getGameDetails(gameId: Long): Result<GameDetails> = detailsResult
 }

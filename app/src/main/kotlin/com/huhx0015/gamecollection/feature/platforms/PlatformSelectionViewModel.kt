@@ -5,6 +5,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.huhx0015.gamecollection.SEARCH_DEBOUNCE_MS
 import com.huhx0015.gamecollection.architecture.mvi.BaseViewModel
 import com.huhx0015.gamecollection.data.paging.IgdbPlatformsPagingSource
 import com.huhx0015.gamecollection.domain.model.GamePlatform
@@ -15,17 +16,19 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 
 private const val PLATFORM_PAGE_SIZE = 10
 
 /** Loads and searches IGDB platforms with paging; emits navigation when one is selected. */
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 @HiltViewModel
 class PlatformSelectionViewModel @Inject constructor(
     private val igdbRepository: IgdbRepository,
@@ -39,6 +42,7 @@ class PlatformSelectionViewModel @Inject constructor(
 
     val platformPaging: Flow<PagingData<GamePlatform>> = _state
         .map { it.searchQuery.trim().takeIf { q -> q.isNotEmpty() } }
+        .debounce { query -> if (query == null) 0L else SEARCH_DEBOUNCE_MS }
         .distinctUntilChanged()
         .flatMapLatest { query ->
             Pager(

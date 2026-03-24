@@ -2,6 +2,7 @@ package com.huhx0015.gamecollection.feature.collection
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.huhx0015.gamecollection.SEARCH_DEBOUNCE_MS
 import com.huhx0015.gamecollection.domain.model.OwnedGame
 import com.huhx0015.gamecollection.domain.repository.IgdbRepository
 import com.huhx0015.gamecollection.domain.usecase.ObserveCollectionUseCase
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -20,6 +22,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import javax.inject.Inject
 
 /** Local search and optional platform filter for the owned-games list. */
@@ -29,7 +32,7 @@ data class CollectionUiState(
 )
 
 /** Presents Room-backed owned games with search, platform filter, and chunked loading (10 per page). */
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 @HiltViewModel
 class CollectionViewModel @Inject constructor(
     private val observeCollectionUseCase: ObserveCollectionUseCase,
@@ -81,10 +84,18 @@ class CollectionViewModel @Inject constructor(
             .map { games -> games.map { it.platformId }.distinct().sorted() }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    private val filteredGames: StateFlow<List<OwnedGame>> = _ui
-        .flatMapLatest { s ->
-            observeCollectionUseCase(s.platformFilter).map { list ->
-                val q = s.searchQuery.trim()
+    private val filteredGames: StateFlow<List<OwnedGame>> = combine(
+        _ui.map { it.platformFilter }.distinctUntilChanged(),
+        _ui
+            .map { it.searchQuery }
+            .debounce { q -> if (q.isBlank()) 0L else SEARCH_DEBOUNCE_MS }
+            .distinctUntilChanged(),
+    ) { platformFilter, searchQuery ->
+        platformFilter to searchQuery
+    }
+        .flatMapLatest { (platformFilter, searchQuery) ->
+            observeCollectionUseCase(platformFilter).map { list ->
+                val q = searchQuery.trim()
                 if (q.isEmpty()) list else list.filter { it.title.contains(q, ignoreCase = true) }
             }
         }
