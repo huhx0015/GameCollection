@@ -18,12 +18,6 @@ Define API endpoints in `core/network/src/main/kotlin/com/huhx0015/gamecollectio
 - `OkHttpClient` with cache (10MB) and `HttpLoggingInterceptor` (BODY)
 - `RetrofitInterface` via `retrofit.create(RetrofitInterface::class.java)`
 
-## Base URL
-
-Configure in `core/common/.../constants/AndroidConstants.kt`:
-- `API_URL` — Base URL for Retrofit
-- `API_VERSION_1`, `CURRENT_API_VERSION` — Version constants
-
 ## Usage
 
 Inject `Retrofit` or `RetrofitInterface` in activities/fragments/ViewModels. Add endpoint methods to `RetrofitInterface` (or create interfaces and obtain via `retrofit.create()`).

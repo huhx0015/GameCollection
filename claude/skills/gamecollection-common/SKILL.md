@@ -9,9 +9,7 @@ description: Common constants, DI modules, and shared utilities for Game Collect
 
 `core/common/.../constants/AndroidConstants.kt`:
 
-- `API_VERSION_1`, `CURRENT_API_VERSION` — API version strings
 - `ANDROID_PREFERENCES` — SharedPreferences name
-- `API_URL` — Base API URL
 
 ## ApplicationModule
 

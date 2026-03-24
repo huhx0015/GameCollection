@@ -10,12 +10,9 @@ When working in this project, apply the following skills based on context:
 | Skill | Use When |
 |-------|----------|
 | `gamecollection-architecture` | Creating activities, fragments, ViewModels; implementing MVI, MVVM, MVP, VIPER |
-| `gamecollection-audio` | Music or sound playback; HXMusic, HXSound |
 | `gamecollection-network` | API endpoints, Retrofit, network configuration |
 | `gamecollection-common` | Constants, SharedPreferences, app-wide config |
 | `gamecollection-ui` | List screens, image loading, dialogs, snackbars, display utils |
-| `gamecollection-location` | Location services, LocationManager, LocationRequest |
-| `gamecollection-localization` | Adding/changing strings.xml; propagating translations to locale directories |
 
 ## Module Structure
 

@@ -5,17 +5,6 @@ description: UI components and utilities for Game Collection. Use when building 
 
 # Game Collection UI
 
-## List Screens
-
-- `ApiRecyclerViewActivity` — Activity for API-backed RecyclerView; injects `ApiRecyclerViewModel`, `Retrofit`
-- `ApiRecyclerViewFragment` — Fragment variant
-- `ApiRecyclerViewModel` — Extends `BaseViewModel`; exposes `errorText`, `errorVisible`, `progressBarVisible`, `recyclerViewVisible` with DataBinding
-
-## BindingUtils
-
-`core/ui/.../utils/BindingUtils.kt`:
-- `@BindingAdapter("app:imageUrl")` — Load image URL into `ImageView` via Coil; uses `ic_image_placeholder` on error
-
 ## SnackbarUtils
 
 `core/ui/.../utils/SnackbarUtils.kt`:
