@@ -12,12 +12,14 @@ data class GameDetailState(
     val error: String? = null,
     val inCollection: Boolean = false,
     val addInProgress: Boolean = false,
+    val removeInProgress: Boolean = false,
     val addMessage: String? = null,
 ) : BaseState
 
 sealed interface GameDetailIntent : BaseIntent {
     data object Refresh : GameDetailIntent
     data object AddToCollection : GameDetailIntent
+    data object RemoveFromCollection : GameDetailIntent
 }
 
 /** Side effects for game detail (none yet). */

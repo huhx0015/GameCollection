@@ -141,14 +141,24 @@ fun GameDetailScreen(
                         }
                     }
                     Button(
-                        onClick = { viewModel.sendIntent(GameDetailIntent.AddToCollection) },
-                        enabled = !ui.inCollection && !ui.addInProgress,
+                        onClick = {
+                            if (ui.inCollection) {
+                                viewModel.sendIntent(GameDetailIntent.RemoveFromCollection)
+                            } else {
+                                viewModel.sendIntent(GameDetailIntent.AddToCollection)
+                            }
+                        },
+                        enabled = when {
+                            ui.inCollection -> !ui.removeInProgress
+                            else -> !ui.addInProgress
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 24.dp),
                     ) {
                         when {
-                            ui.inCollection -> Text("In your collection")
+                            ui.inCollection && ui.removeInProgress -> Text("Removing…")
+                            ui.inCollection -> Text("Remove from collection")
                             ui.addInProgress -> Text("Adding…")
                             else -> Text("Add to collection")
                         }

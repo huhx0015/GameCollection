@@ -5,6 +5,7 @@ import com.huhx0015.gamecollection.architecture.mvi.BaseViewModel
 import com.huhx0015.gamecollection.domain.usecase.AddGameToCollectionUseCase
 import com.huhx0015.gamecollection.domain.usecase.GetGameDetailsUseCase
 import com.huhx0015.gamecollection.domain.usecase.IsGameInCollectionUseCase
+import com.huhx0015.gamecollection.domain.usecase.RemoveFromCollectionUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +21,7 @@ class GameDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getGameDetails: GetGameDetailsUseCase,
     private val addGame: AddGameToCollectionUseCase,
+    private val removeGame: RemoveFromCollectionUseCase,
     private val isInCollection: IsGameInCollectionUseCase,
 ) : BaseViewModel<GameDetailState, GameDetailIntent, GameDetailEvent>() {
 
@@ -39,6 +41,7 @@ class GameDetailViewModel @Inject constructor(
         when (intent) {
             GameDetailIntent.Refresh -> refresh()
             GameDetailIntent.AddToCollection -> addToCollection()
+            GameDetailIntent.RemoveFromCollection -> removeFromCollection()
         }
     }
 
@@ -75,6 +78,21 @@ class GameDetailViewModel @Inject constructor(
             .onFailure { e ->
                 _state.update {
                     it.copy(addInProgress = false, addMessage = e.message ?: "Failed")
+                }
+            }
+    }
+
+    private suspend fun removeFromCollection() {
+        _state.update { it.copy(removeInProgress = true, addMessage = null) }
+        removeGame(gameId, platformId)
+            .onSuccess {
+                _state.update {
+                    it.copy(removeInProgress = false, inCollection = false, addMessage = "Removed")
+                }
+            }
+            .onFailure { e ->
+                _state.update {
+                    it.copy(removeInProgress = false, addMessage = e.message ?: "Failed")
                 }
             }
     }
