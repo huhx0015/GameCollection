@@ -1,6 +1,5 @@
 package com.huhx0015.gamecollection.data.remote.igdb
 
-import com.huhx0015.gamecollection.domain.model.RegionFilter
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -10,14 +9,21 @@ object IgdbQueryBuilder {
 
     private val textPlain = "text/plain; charset=utf-8".toMediaType()
 
-    fun platformsRequestBody(search: String?): RequestBody =
+    fun platformsRequestBody(search: String?, offset: Int, limit: Int): RequestBody =
         buildString {
             append("fields id,name,slug,summary; ")
             if (!search.isNullOrBlank()) {
                 append("search \"${escape(search)}\"; ")
             }
-            append("limit 100; ")
+            append("limit $limit; offset $offset; ")
         }.toRequestBody(textPlain)
+
+    fun platformsByIdsRequestBody(ids: Set<Long>): RequestBody {
+        require(ids.isNotEmpty()) { "ids must not be empty" }
+        val idList = ids.sorted().joinToString(",")
+        return "fields id,name,slug,summary; where id = ($idList); limit ${ids.size}; "
+            .toRequestBody(textPlain)
+    }
 
     fun genresRequestBody(): RequestBody =
         "fields id,name; limit 500; ".toRequestBody(textPlain)
@@ -27,18 +33,12 @@ object IgdbQueryBuilder {
         offset: Int,
         limit: Int,
         searchQuery: String?,
-        region: RegionFilter,
         genreIds: Set<Long>,
     ): RequestBody {
         val sb = StringBuilder()
         sb.append("fields id,name,summary,genres.name,cover.image_id; ")
         val filters = mutableListOf<String>()
         filters.add("platforms = ($platformId)")
-        if (region != RegionFilter.ALL && region.igdbRegionIds.isNotEmpty()) {
-            val regionClause = region.igdbRegionIds
-                .joinToString(" | ") { rid -> "release_dates.region = $rid" }
-            filters.add("($regionClause)")
-        }
         if (genreIds.isNotEmpty()) {
             val g = genreIds.joinToString(",")
             filters.add("genres = ($g)")

@@ -4,15 +4,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,6 +26,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.huhx0015.gamecollection.domain.model.GamePlatform
 
@@ -37,6 +39,7 @@ fun PlatformSelectionScreen(
     viewModel: PlatformSelectionViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val pagingItems = viewModel.platformPaging.collectAsLazyPagingItems()
 
     LaunchedEffect(Unit) {
         viewModel.events.collect { event ->
@@ -65,37 +68,69 @@ fun PlatformSelectionScreen(
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
             singleLine = true,
         )
-        when {
-            state.isLoading && state.platforms.isEmpty() -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    CircularProgressIndicator()
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 16.dp),
+        ) {
+            val refresh = pagingItems.loadState.refresh
+            if (refresh is LoadState.Error) {
+                item {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                    ) {
+                        Text(
+                            text = refresh.error.localizedMessage ?: "Could not load platforms",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodyLarge,
+                        )
+                        Button(
+                            onClick = { pagingItems.retry() },
+                            modifier = Modifier.padding(top = 8.dp),
+                        ) {
+                            Text("Retry")
+                        }
+                    }
                 }
             }
-            state.errorMessage != null -> {
-                Text(
-                    text = state.errorMessage ?: "Error",
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(top = 16.dp),
-                )
+            items(
+                count = pagingItems.itemCount,
+                key = pagingItems.itemKey { it.id },
+            ) { index ->
+                val platform = pagingItems[index]
+                if (platform != null) {
+                    PlatformListRow(
+                        platform = platform,
+                        onClick = {
+                            viewModel.sendIntent(PlatformSelectionIntent.PlatformClicked(platform.id))
+                        },
+                    )
+                }
             }
-            else -> {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(3),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    contentPadding = PaddingValues(vertical = 16.dp),
-                    modifier = Modifier.fillMaxSize(),
-                ) {
-                    items(state.platforms, key = { it.id }) { platform ->
-                        PlatformGridItem(
-                            platform = platform,
-                            onClick = {
-                                viewModel.sendIntent(PlatformSelectionIntent.PlatformClicked(platform.id))
-                            },
-                        )
+            if (refresh is LoadState.Loading && pagingItems.itemCount == 0) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(32.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+            }
+            if (pagingItems.loadState.append is LoadState.Loading) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        CircularProgressIndicator()
                     }
                 }
             }
@@ -104,7 +139,7 @@ fun PlatformSelectionScreen(
 }
 
 @Composable
-private fun PlatformGridItem(
+private fun PlatformListRow(
     platform: GamePlatform,
     onClick: () -> Unit,
 ) {
@@ -113,11 +148,26 @@ private fun PlatformGridItem(
             .fillMaxWidth()
             .clickable(onClick = onClick),
     ) {
-        Text(
-            text = platform.name,
-            style = MaterialTheme.typography.titleSmall,
-            modifier = Modifier.padding(12.dp),
-            maxLines = 3,
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = platform.name,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                val subtitle = platform.slug?.takeIf { it.isNotBlank() }
+                if (subtitle != null) {
+                    Text(
+                        text = subtitle,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+        }
     }
 }

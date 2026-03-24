@@ -8,7 +8,6 @@ import com.huhx0015.gamecollection.domain.model.GameDetails
 import com.huhx0015.gamecollection.domain.model.GamePlatform
 import com.huhx0015.gamecollection.domain.model.GameSummary
 import com.huhx0015.gamecollection.domain.model.Genre
-import com.huhx0015.gamecollection.domain.model.RegionFilter
 import com.huhx0015.gamecollection.domain.repository.IgdbRepository
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -19,10 +18,24 @@ class IgdbRepositoryImpl @Inject constructor(
     private val igdbApi: IgdbApi,
 ) : IgdbRepository {
 
-    override suspend fun getPlatforms(searchQuery: String?): Result<List<GamePlatform>> = runCatching {
-        val body = IgdbQueryBuilder.platformsRequestBody(searchQuery)
+    override suspend fun fetchPlatformsPage(
+        searchQuery: String?,
+        offset: Int,
+        limit: Int,
+    ): Result<List<GamePlatform>> = runCatching {
+        val body = IgdbQueryBuilder.platformsRequestBody(searchQuery, offset, limit)
         igdbApi.platforms(body).mapSuccess { list -> list.map { it.toDomain() } }.getOrThrow()
     }
+
+    override suspend fun fetchPlatformsByIds(ids: Set<Long>): Result<List<GamePlatform>> =
+        if (ids.isEmpty()) {
+            Result.success(emptyList())
+        } else {
+            runCatching {
+                val body = IgdbQueryBuilder.platformsByIdsRequestBody(ids)
+                igdbApi.platforms(body).mapSuccess { list -> list.map { it.toDomain() } }.getOrThrow()
+            }
+        }
 
     override suspend fun getGenres(): Result<List<Genre>> = runCatching {
         val body = IgdbQueryBuilder.genresRequestBody()
@@ -34,7 +47,6 @@ class IgdbRepositoryImpl @Inject constructor(
         offset: Int,
         limit: Int,
         searchQuery: String?,
-        region: RegionFilter,
         genreIds: Set<Long>,
     ): Result<List<GameSummary>> = runCatching {
         val body = IgdbQueryBuilder.gamesRequestBody(
@@ -42,7 +54,6 @@ class IgdbRepositoryImpl @Inject constructor(
             offset = offset,
             limit = limit,
             searchQuery = searchQuery,
-            region = region,
             genreIds = genreIds,
         )
         igdbApi.games(body).mapSuccess { list -> list.map { it.toDomain() } }.getOrThrow()

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -20,7 +21,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
@@ -28,6 +31,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.huhx0015.gamecollection.domain.model.OwnedGame
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 @Composable
 fun CollectionScreen(
@@ -35,8 +39,24 @@ fun CollectionScreen(
     viewModel: CollectionViewModel = hiltViewModel(),
 ) {
     val ui by viewModel.uiState.collectAsStateWithLifecycle()
-    val games by viewModel.ownedGames.collectAsStateWithLifecycle()
+    val games by viewModel.displayedGames.collectAsStateWithLifecycle()
+    val hasMore by viewModel.hasMoreGames.collectAsStateWithLifecycle()
     val platformOptions by viewModel.platformIdsInCollection.collectAsStateWithLifecycle()
+    val platformNames by viewModel.platformNames.collectAsStateWithLifecycle()
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(games.size, hasMore, listState) {
+        snapshotFlow {
+            val lastVisible = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
+            Triple(lastVisible, games.size, hasMore)
+        }
+            .distinctUntilChanged()
+            .collect { (lastIdx, size, more) ->
+                if (more && size > 0 && lastIdx >= size - 1) {
+                    viewModel.loadMore()
+                }
+            }
+    }
 
     Column(
         modifier = Modifier
@@ -73,16 +93,18 @@ fun CollectionScreen(
                     onClick = {
                         viewModel.onPlatformFilter(if (ui.platformFilter == pid) null else pid)
                     },
-                    label = { Text("ID $pid") },
+                    label = { Text(platformNames[pid] ?: "ID $pid") },
                 )
             }
         }
         LazyColumn(
+            state = listState,
             verticalArrangement = Arrangement.spacedBy(0.dp),
         ) {
             items(games, key = { "${it.igdbGameId}_${it.platformId}" }) { game ->
                 CollectionRow(
                     game = game,
+                    platformLabel = platformNames[game.platformId],
                     onClick = { onGameClick(game.igdbGameId, game.platformId) },
                 )
             }
@@ -93,6 +115,7 @@ fun CollectionScreen(
 @Composable
 private fun CollectionRow(
     game: OwnedGame,
+    platformLabel: String?,
     onClick: () -> Unit,
 ) {
     Row(
@@ -111,7 +134,7 @@ private fun CollectionRow(
         Column(modifier = Modifier.weight(1f)) {
             Text(game.title, style = MaterialTheme.typography.titleMedium)
             Text(
-                "Platform id: ${game.platformId}",
+                platformLabel ?: "Platform id: ${game.platformId}",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

@@ -7,7 +7,6 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import com.huhx0015.gamecollection.data.paging.IgdbGamesPagingSource
-import com.huhx0015.gamecollection.domain.model.RegionFilter
 import com.huhx0015.gamecollection.domain.repository.IgdbRepository
 import com.huhx0015.gamecollection.domain.usecase.GetGenresUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,16 +18,17 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
 
-/** Search text, region, and genre filters applied to the paged IGDB game list. */
+/** Search text and genre filters applied to the paged IGDB game list. */
 data class GameListFilters(
     val searchQuery: String = "",
-    val region: RegionFilter = RegionFilter.ALL,
     val selectedGenreIds: Set<Long> = emptySet(),
 )
 
 /** Paged catalog for a chosen platform with genre list and filter state. */
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class GameListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
@@ -52,12 +52,15 @@ class GameListViewModel @Inject constructor(
         .distinctUntilChanged()
         .flatMapLatest { f ->
             Pager(
-                config = PagingConfig(pageSize = 20, enablePlaceholders = false),
+                config = PagingConfig(
+                    pageSize = 10,
+                    enablePlaceholders = false,
+                    initialLoadSize = 10,
+                ),
                 pagingSourceFactory = {
                     IgdbGamesPagingSource(
                         platformId = platformId,
                         searchQuery = f.searchQuery.takeIf { it.isNotBlank() },
-                        region = f.region,
                         genreIds = f.selectedGenreIds,
                         igdbRepository = igdbRepository,
                     )
@@ -76,10 +79,6 @@ class GameListViewModel @Inject constructor(
 
     fun onSearchChange(query: String) {
         _filters.update { it.copy(searchQuery = query) }
-    }
-
-    fun onRegionChange(region: RegionFilter) {
-        _filters.update { it.copy(region = region) }
     }
 
     fun toggleGenre(genreId: Long) {

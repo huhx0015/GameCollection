@@ -4,12 +4,18 @@ import com.huhx0015.gamecollection.domain.model.GameDetails
 import com.huhx0015.gamecollection.domain.model.GamePlatform
 import com.huhx0015.gamecollection.domain.model.GameSummary
 import com.huhx0015.gamecollection.domain.model.Genre
-import com.huhx0015.gamecollection.domain.model.RegionFilter
 
 /** Remote game metadata from IGDB (platforms, genres, paged games, details). */
 interface IgdbRepository {
 
-    suspend fun getPlatforms(searchQuery: String?): Result<List<GamePlatform>>
+    suspend fun fetchPlatformsPage(
+        searchQuery: String?,
+        offset: Int,
+        limit: Int,
+    ): Result<List<GamePlatform>>
+
+    /** Resolves IGDB platform ids to names (e.g. for collection filters). Empty [ids] returns success of empty list. */
+    suspend fun fetchPlatformsByIds(ids: Set<Long>): Result<List<GamePlatform>>
 
     suspend fun getGenres(): Result<List<Genre>>
 
@@ -18,7 +24,6 @@ interface IgdbRepository {
         offset: Int,
         limit: Int,
         searchQuery: String?,
-        region: RegionFilter,
         genreIds: Set<Long>,
     ): Result<List<GameSummary>>
 

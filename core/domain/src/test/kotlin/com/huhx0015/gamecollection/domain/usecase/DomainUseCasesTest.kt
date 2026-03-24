@@ -24,8 +24,11 @@ class DomainUseCasesTest {
             )
         }
         val useCase = GetPlatformsUseCase(igdb)
-        val result = useCase("q")
-        assertEquals("q", igdb.lastPlatformsQuery)
+        val result = useCase("q", offset = 0, limit = 10)
+        assertEquals(
+            FakeIgdbRepository.PlatformsPageArgs("q", 0, 10),
+            igdb.lastPlatformsPageArgs,
+        )
         assertEquals(1, result.getOrNull()?.size)
         assertEquals("PS5", result.getOrNull()?.first()?.name)
     }

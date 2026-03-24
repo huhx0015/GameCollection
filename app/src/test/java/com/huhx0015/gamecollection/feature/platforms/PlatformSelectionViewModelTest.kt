@@ -1,9 +1,9 @@
 package com.huhx0015.gamecollection.feature.platforms
 
+import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
 import com.huhx0015.gamecollection.MainDispatcherRule
 import com.huhx0015.gamecollection.domain.model.GamePlatform
-import com.huhx0015.gamecollection.domain.usecase.GetPlatformsUseCase
 import com.huhx0015.gamecollection.fakes.FakeIgdbRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -12,7 +12,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 
-/** Tests [PlatformSelectionViewModel] platform loading, search, and navigation events. */
+/** Tests [PlatformSelectionViewModel] platform paging and navigation events. */
 @OptIn(ExperimentalCoroutinesApi::class)
 class PlatformSelectionViewModelTest {
 
@@ -26,11 +26,11 @@ class PlatformSelectionViewModelTest {
                 listOf(GamePlatform(1, "PS5", "ps5", null)),
             )
         }
-        val vm = PlatformSelectionViewModel(GetPlatformsUseCase(fake))
+        val vm = PlatformSelectionViewModel(fake)
         advanceUntilIdle()
-        assertEquals(1, vm.state.value.platforms.size)
-        assertEquals("PS5", vm.state.value.platforms.first().name)
-        assertEquals(false, vm.state.value.isLoading)
+        val snapshot = vm.platformPaging.asSnapshot()
+        assertEquals(1, snapshot.size)
+        assertEquals("PS5", snapshot.first().name)
     }
 
     @Test
@@ -38,8 +38,7 @@ class PlatformSelectionViewModelTest {
         val fake = FakeIgdbRepository().apply {
             platformsResult = Result.success(emptyList())
         }
-        val vm = PlatformSelectionViewModel(GetPlatformsUseCase(fake))
-        advanceUntilIdle()
+        val vm = PlatformSelectionViewModel(fake)
         vm.events.test {
             vm.sendIntent(PlatformSelectionIntent.PlatformClicked(42L))
             advanceUntilIdle()
