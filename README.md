@@ -14,10 +14,6 @@ twitch.client.id=<INSERT_CLIENT_ID>
 twitch.client.secret=<INSERT_CLIENT_SECRET>
 ```
 
-Alternatively, you can define the same keys in `local.properties`; the build prefers `keys.properties` when both are present.
-
-Do not commit real secrets—keep `keys.properties` out of version control (it should remain git-ignored).
-
 ## Background
 
 The app was built with [Cursor](https://cursor.com/) using agentic AI workflows (Composer 2 Fast in Plan mode). The goal was to show that a small, production-style Android app—modularized, test-aware, and aligned with common architecture guidance—can be delivered through AI-assisted development without cutting corners on structure or verification.
